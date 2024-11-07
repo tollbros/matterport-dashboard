@@ -10,8 +10,8 @@ export default function Home() {
 
     console.log("USE EFFECT!");
     const getMatterPorts = async () => {
-      const response = await fetch(`/api/getMatterports`, {
-        method: 'POST',
+      const response = await fetch(`/api/matterports`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -20,7 +20,7 @@ export default function Home() {
       });
     
       if (response) {
-        returnedData = await response?.json();
+        const returnedData = await response?.json();
         console.log(returnedData);
       }
     };
@@ -32,7 +32,7 @@ export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-       our stuff here
+       our stuff here!!!
       </main>
      
     </div>
