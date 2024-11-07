@@ -20,17 +20,23 @@ You can start editing the page by modifying `app/page.js`. The page auto-updates
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+## SQL Query
 
-To learn more about Next.js, take a look at the following resources:
+```
+SELECT SUM(active) numactive, `Matterport Name` FROM (
+SELECT c.comm_name as "Community/Model/Plan", c.on_the_web as "active", mm.name as "Matterport Name" from community c join lk_multimedia_community lmc on lmc.community_id=c.community_id join multimedia mm on mm.multimedia_id=lmc.multimedia_id where mm.type_id=10006
+UNION 
+SELECT CONCAT(c.comm_name,"::",mp.plan_name), cp.on_the_web, mmcp.name from commPlans cp join lk_multimedia_commPlans lmcp on cp.commPlan_id=lmcp.plan_id join multimedia mmcp on mmcp.multimedia_id=lmcp.multimedia_id 
+join masterPlans mp on mp.masterPlan_id=cp.masterPlan_id
+join community c on c.community_id=cp.community_id
+where mmcp.type_id=10006
+UNION 
+SELECT CONCAT("MasterPlan::",mp.plan_name), IF(ods.ModelStatusCode='DEA',0,1), mm.name FROM masterPlans mp
+join lk_multimedia_masterPlan lmp on mp.masterPlan_id=lmp.master_plan_id 
+LEFT join ODS_ARCHO_MODEL_MASTER_INFO ods on ods.PlanNum=mp.jde_num 
+join multimedia mm on mm.multimedia_id=lmp.multimedia_id and mm.type_id=10006  
+) t group by `Matterport Name` having numactive=0;
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`/v1/search/matterports/getmatterports`
