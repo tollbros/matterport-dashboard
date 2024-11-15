@@ -102,7 +102,7 @@ export default function Home() {
               
               return (
                 <li key={index} className={`${!live ? styles.inActive : ""}  ${isArchived ? styles.isArchived : ""} ${(isArchived && !live) ? styles.archivedAndNotLive : ""}`}>
-                  <p>{live ? "FOUND" : "NOT FOUND"} | <span><Link target="_blank" href={mLink}>{mLinkID}</Link></span>: {removeQuotes(matterport[0])} {removeQuotes(matterport[2])}</p>
+                  <p>{live ? "FOUND" : "NOT FOUND"} | <span><Link target="_blank" href={mLink}>{mLinkID}</Link></span>: {removeQuotes(matterport[0])} {removeQuotes(matterport[2])} {removeQuotes(matterport[7])}</p>
                 </li>
               )
             })}
@@ -123,7 +123,7 @@ export default function Home() {
               if (!live){
                 return (
                   <li key={index} className={`${!live ? styles.inActive : ""} ${isArchived ? styles.isArchived : ""} ${(isArchived && !live) ? styles.archivedAndNotLive : ""}`} >
-                    <p>{live ? "FOUND" : "NOT FOUND"} | <span><Link target="_blank" href={mLink}>{mLinkID}</Link></span>: {removeQuotes(matterport[0])} {removeQuotes(matterport[2])}</p>
+                    <p>{live ? "FOUND" : "NOT FOUND"} | <span><Link target="_blank" href={mLink}>{mLinkID}</Link></span>: {removeQuotes(matterport[0])} {removeQuotes(matterport[2])} {removeQuotes(matterport[7])}</p>
                   </li>
                 )
               }
