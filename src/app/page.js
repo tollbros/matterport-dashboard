@@ -89,12 +89,25 @@ export default function Home() {
     <div className={styles.page}>
       <main className={styles.main}>
 
+        
+
        <section className={styles.mlist}>
 
           <h2> Matterport vs Web Database
             {gettingData && <span>Fetching Data from Web Database</span>}
             {!gettingData && <span className={styles.got}>Data Fetched from Web Database!</span>}
           </h2>
+
+          <aside>
+            <input type="radio" id="html" name="displayType" value="ALL" />
+            <label for="html">ALL</label>
+            <input type="radio" id="css" name="displayType" value="OfflineArchived" />
+            <label for="css">Offline and Archived</label>
+            <input type="radio" id="javascript" name="displayType" value="Online" />
+            <label for="javascript">Online and Archived</label>
+            <input type="radio" id="javascript" name="displayType" value="OfflineLive" />
+            <label for="javascript">Offline and Not Archived</label>
+          </aside>
           
           {matterports.length > 0 && //liveMatterports.length > 0 && 
           <ol>
