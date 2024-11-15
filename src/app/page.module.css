@@ -1,11 +1,16 @@
 
 
-.main .mlist span {
-      color: blue;
-      font-weight: bold;
-      text-decoration: underline;
-}
 
+
+.main .mlist.unused {
+  background: #ccc;
+  padding: 10px;
+}
+.main .mlist span a {
+  color: blue;
+  font-weight: bold;
+  text-decoration: underline;
+}
 
 
 .inActive {
@@ -25,4 +30,8 @@
 
 .inActive p {
   color: black;
+}
+
+h2 span.got {
+  color: green;
 }

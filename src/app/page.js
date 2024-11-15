@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import styles from "./page.module.css";
 import Link from 'next/link';
+import Head from 'next/head';
 
 
 
@@ -9,39 +10,8 @@ export default function Home() {
 
   const [matterports, setMatterports] = useState([]);
   const [liveMatterports, setLiveMatterports] = useState([]);
+  const [gettingData, setGettingData] = useState(true);
 
-  const loadCSV = async () => {
-    //load .csv file from /data/matterport.csv
-    const response = await fetch('/data/matterport.csv');
-    const reader = response.body.getReader();
-    const result = await reader.read();
-    const decoder = new TextDecoder('utf-8');
-    const csv = decoder.decode(result.value);
-    const parsedMatterports = parseCSV(csv);
-    setMatterports(parsedMatterports);
-  }
-
-  const parseCSV = (csv) => {
-    const lines = csv.split('\n');
-    const result = [];
-    //const headers = lines[0].split(',');
-    for (let i = 6; i < lines.length; i++) {
-      //const obj = {};
-      const currentline = lines[i].split(',');
-      if (currentline.length > 5) {
-        result.push(currentline);
-      }
-      /* for (let j = 0; j < headers.length; j++) {
-        obj[headers[j]] = currentline[j];
-      } */
-      //result.push(obj);
-    }
-    return result
-  }
-
-  const removeQuotes = (str) => {
-    return str.replace(/['"]+/g, '');
-  }
 
   const isLive = (mID) => {
     for (let i = 0; i < liveMatterports.length; i++) {
@@ -52,9 +22,46 @@ export default function Home() {
     return false;
   }
 
+ 
   useEffect(() => {
+    const fetchCsv = async () => {
+      try {
+        const response = await fetch('/data/matterport.csv');
+        const csvText = await response.text();
+        const parsedData = parseCsv(csvText);
 
-    console.log("USE EFFECT!");
+        parsedData.sort((a, b) => {
+          return new Date(a.Created_Date) - new Date(b.Created_Date);
+        });
+
+        setMatterports(parsedData);
+      } catch (error) {
+        console.error('Error fetching or parsing CSV:', error);
+      }
+    };
+
+    fetchCsv();
+  }, []);
+
+
+  const parseCsv = (csvText) => {
+    const lines = csvText.split('\n'); // Split by line
+    const headers = lines[5].split(','); // Assume 6th line is header
+    const rows = lines.slice(6); // Exclude header row and above (meta data from Matterport)
+
+    return rows
+      .filter((row) => row.trim() !== '')  // Remove empty rows
+      .map((row) => {
+        const values = row.match(/"[^"]*"|[^,]+/g).map(item => item?.replace(/^"|"$/g, '')); // Split by comma, but ignore commas inside quotes
+        return headers.reduce((acc, header, index) => {
+          acc[header.trim().replace(/(^"|"$)/g, '').replace(/\s+/g, '_')] = values[index]?.trim() || '';  // Replace spaces with underscores and remove quotes in header
+          return acc;
+        }, {});
+      });
+  };
+
+
+  useEffect(() => {
     const getMatterPorts = async () => {
       const response = await fetch(`/api/matterports`, {
         method: 'GET',
@@ -68,19 +75,14 @@ export default function Home() {
       if (response) {
         const returnedData = await response?.json();
         setLiveMatterports(returnedData);
-        console.log(returnedData);
+        setGettingData(false);
       }
     };
-
-  
-    getMatterPorts();
-
-  }, []);
-
-  useEffect(() => {
-    console.log("MATTERPORTS: ", liveMatterports);
-    loadCSV();
-  }, [liveMatterports]);
+    
+    if (matterports.length > 0) {
+      getMatterPorts();
+    }
+  }, [matterports]);
 
   
   return (
@@ -89,47 +91,35 @@ export default function Home() {
 
        <section className={styles.mlist}>
 
-          <a href="#ununsed">Jump to Unused Matterports</a>
-
-          <h2> Matterport vs Web Database </h2>
-          <ol>
-            {matterports.map((matterport, index) => {
-              const mLink = removeQuotes(matterport[1]);
-              const mLinkID = mLink.split('/')[mLink.split('/').length - 1];
-
-              const live = isLive(mLinkID);
-              const isArchived = removeQuotes(matterport[2]).toLowerCase().includes("archived");
-              
-              return (
-                <li key={index} className={`${!live ? styles.inActive : ""}  ${isArchived ? styles.isArchived : ""} ${(isArchived && !live) ? styles.archivedAndNotLive : ""}`}>
-                  <p>{live ? "FOUND" : "NOT FOUND"} | <span><Link target="_blank" href={mLink}>{mLinkID}</Link></span>: {removeQuotes(matterport[0])} {removeQuotes(matterport[2])} {removeQuotes(matterport[7])}</p>
-                </li>
-              )
-            })}
-          </ol>
-       </section>
-
-       <section className={styles.mlist}>
-          <h2 id="ununsed"> Unused Matterports </h2>
-          <ol>
-            {matterports.map((matterport, index) => {
-              const mLink = removeQuotes(matterport[1]);
-              const mLinkID = mLink.split('/')[mLink.split('/').length - 1];
-
-              const live = isLive(mLinkID);
-              const isArchived = removeQuotes(matterport[2]).toLowerCase().includes("archived");
+          <h2> Matterport vs Web Database
+            {gettingData && <span>Fetching Data from Web Database</span>}
+            {!gettingData && <span className={styles.got}>Data Fetched from Web Database!</span>}
+          </h2>
           
+          {matterports.length > 0 && //liveMatterports.length > 0 && 
+          <ol>
+             <li className={`${styles.header}`}>
+                <p><span>WEB DB STATUS</span><span>MP ID</span> <span>MP FOLDER</span> <span>MP NAME</span> <span>CREATE DATE</span></p>
+              </li>
+              {matterports.map((matterport, index) => {
 
-              if (!live){
-                return (
-                  <li key={index} className={`${!live ? styles.inActive : ""} ${isArchived ? styles.isArchived : ""} ${(isArchived && !live) ? styles.archivedAndNotLive : ""}`} >
-                    <p>{live ? "FOUND" : "NOT FOUND"} | <span><Link target="_blank" href={mLink}>{mLinkID}</Link></span>: {removeQuotes(matterport[0])} {removeQuotes(matterport[2])} {removeQuotes(matterport[7])}</p>
-                  </li>
-                )
-              }
-            })}
+                  const mLink = matterport.Space_Details_URL;
+                  const mLinkID = mLink.split('/')[mLink.split('/').length - 1];
+
+                  const live = isLive(mLinkID);
+                  const isArchived = matterport.Parent_folder_name.toLowerCase().includes("archived");
+                
+                  return (
+                    <li key={`mm-${index}`} className={`${!live ? styles.inActive : ""}  ${isArchived ? styles.isArchived : ""} ${(isArchived && !live) ? styles.archivedAndNotLive : ""}`}>
+                      <p><span>{live ? "online" : "offline"}</span><span><Link target="_blank" href={mLink}>{mLinkID}</Link></span> <span>{matterport.Parent_folder_name}</span> <span>{matterport.Space_name}</span> <span>{matterport.Created_Date}</span></p>
+                    </li>
+                  )
+
+              })}
           </ol>
+          }
        </section>
+
       </main>
      
     </div>
