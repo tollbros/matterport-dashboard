@@ -9,7 +9,17 @@
 
 
 .inActive {
+  background: #f73a10;
+  color: black;
+}
+
+.isArchived {
   background: #f7c510;
+  color: black;
+}
+
+.archivedAndNotLive {
+  background: #80f710 !important;
   color: black;
 }
 

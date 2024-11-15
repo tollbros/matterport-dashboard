@@ -98,9 +98,10 @@ export default function Home() {
               const mLinkID = mLink.split('/')[mLink.split('/').length - 1];
 
               const live = isLive(mLinkID);
+              const isArchived = removeQuotes(matterport[2]).toLowerCase().includes("archived");
               
               return (
-                <li key={index} className={!live ? styles.inActive : ""}>
+                <li key={index} className={`${!live ? styles.inActive : ""}  ${isArchived ? styles.isArchived : ""} ${(isArchived && !live) ? styles.archivedAndNotLive : ""}`}>
                   <p>{live ? "FOUND" : "NOT FOUND"} | <span><Link target="_blank" href={mLink}>{mLinkID}</Link></span>: {removeQuotes(matterport[0])} {removeQuotes(matterport[2])}</p>
                 </li>
               )
@@ -116,10 +117,12 @@ export default function Home() {
               const mLinkID = mLink.split('/')[mLink.split('/').length - 1];
 
               const live = isLive(mLinkID);
-              
+              const isArchived = removeQuotes(matterport[2]).toLowerCase().includes("archived");
+          
+
               if (!live){
                 return (
-                  <li key={index} className={!live ? styles.inActive : ""}>
+                  <li key={index} className={`${!live ? styles.inActive : ""} ${isArchived ? styles.isArchived : ""} ${(isArchived && !live) ? styles.archivedAndNotLive : ""}`} >
                     <p>{live ? "FOUND" : "NOT FOUND"} | <span><Link target="_blank" href={mLink}>{mLinkID}</Link></span>: {removeQuotes(matterport[0])} {removeQuotes(matterport[2])}</p>
                   </li>
                 )
