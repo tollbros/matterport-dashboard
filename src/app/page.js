@@ -13,6 +13,28 @@ export default function Home() {
   const [gettingData, setGettingData] = useState(true);
 
 
+  const [green, setGreen] = useState(true);
+  const [red, setRed] = useState(true);
+  const [yellow, setYellow] = useState(true);
+  const [white, setWhite] = useState(true);
+
+  const handleGreen = (event) => {
+    setGreen(event.target.checked);
+  };
+
+  const handleRed = (event) => {
+    setRed(event.target.checked);
+  };
+
+  const handleYellow = (event) => {
+    setYellow(event.target.checked);
+  };
+
+  const handleWhite = (event) => {
+    setWhite(event.target.checked);
+  };
+
+
   const isLive = (mID) => {
     for (let i = 0; i < liveMatterports.length; i++) {
       if (liveMatterports[i]['Matterport Name'] === mID) {
@@ -99,14 +121,22 @@ export default function Home() {
           </h2>
 
           <aside>
-            <input type="radio" id="html" name="displayType" value="ALL" />
-            <label for="html">ALL</label>
-            <input type="radio" id="css" name="displayType" value="OfflineArchived" />
-            <label for="css">Offline and Archived</label>
-            <input type="radio" id="javascript" name="displayType" value="Online" />
-            <label for="javascript">Online and Archived</label>
-            <input type="radio" id="javascript" name="displayType" value="OfflineLive" />
-            <label for="javascript">Offline and Not Archived</label>
+            <fieldset className={styles.inputs}>
+              <input type="checkbox" id="white" name="Online and Live" checked={white} onChange={handleWhite} />
+              <label for="white">Online and Live</label>
+            </fieldset>
+            <fieldset className={styles.inputs}>
+              <input type="checkbox" id="green" name="Offline and Archived" checked={green} onChange={handleGreen} />
+              <label for="green" className={styles.inputGreen}>Offline and Archived</label>
+            </fieldset>
+            <fieldset className={styles.inputs}>
+              <input type="checkbox" id="yellow" name="Online and Archived" checked={yellow} onChange={handleYellow} />
+              <label for="yellow" className={styles.inputYellow}>Online and Archived</label>
+            </fieldset>
+            <fieldset className={styles.inputs}>
+              <input type="checkbox" id="red" name="Offline and Not Archived" checked={red} onChange={handleRed} />
+              <label for="red"className={styles.inputRed}>Offline and Not Archived</label>
+            </fieldset>
           </aside>
           
           {matterports.length > 0 && //liveMatterports.length > 0 && 
@@ -122,12 +152,22 @@ export default function Home() {
                   const live = isLive(mLinkID);
                   const isArchived = matterport.Parent_folder_name.toLowerCase().includes("archived");
                 
-                  return (
-                    <li key={`mm-${index}`} className={`${!live ? styles.inActive : ""}  ${isArchived ? styles.isArchived : ""} ${(isArchived && !live) ? styles.archivedAndNotLive : ""}`}>
-                      <p><span>{live ? "online" : "offline"}</span><span><Link target="_blank" href={mLink}>{mLinkID}</Link></span> <span>{matterport.Parent_folder_name}</span> <span>{matterport.Space_name}</span> <span>{matterport.Created_Date}</span></p>
-                    </li>
-                  )
+                  const isGreen = !live && isArchived;
+                  const isRed = !live && !isArchived;
+                  const isYellow = live && isArchived;
+                  const isWhite = live && !isArchived;
 
+                  let shown = false;
+                  if (green && isGreen || red && isRed || yellow && isYellow || white && isWhite) {
+                    shown = true;
+                  }
+
+                    return (
+                      <li key={`mm-${index}`} className={`${!shown ? styles.hidden : ""} ${!live ? styles.inActive : ""}  ${isArchived ? styles.isArchived : ""} ${(isArchived && !live) ? styles.archivedAndNotLive : ""}`}>
+                        <p><span>{live ? "online" : "offline"}</span><span><Link target="_blank" href={mLink}>{mLinkID}</Link></span> <span>{matterport.Parent_folder_name}</span> <span>{matterport.Space_name}</span> <span>{matterport.Created_Date}</span></p>
+                      </li>
+                    )
+                  
               })}
           </ol>
           }

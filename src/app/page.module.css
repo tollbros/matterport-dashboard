@@ -12,6 +12,9 @@
   text-decoration: underline;
 }
 
+.hidden {
+  display: none;
+}
 
 .inActive {
   background: #f73a10;
@@ -34,4 +37,23 @@
 
 h2 span.got {
   color: green;
+}
+
+fieldset.inputs {
+  padding: 10px;
+  margin: 0;
+  border: 0;
+  display: inline-block;
+}
+
+.inputGreen {
+  color: green;
+}
+
+.inputRed {
+  color: red;
+}
+
+.inputYellow {
+  color: goldenrod;
 }
