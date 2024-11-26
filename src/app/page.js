@@ -85,7 +85,7 @@ export default function Home() {
 
   useEffect(() => {
     const getMatterPorts = async () => {
-      const response = await fetch(`/api/matterports`, {
+      const response = await fetch(`/matterport-dashboard/api/matterports`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
