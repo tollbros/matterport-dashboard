@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import styles from "./page.module.css";
 import Link from 'next/link';
-import Head from 'next/head';
 
 
 
@@ -48,7 +47,7 @@ export default function Home() {
   useEffect(() => {
     const fetchCsv = async () => {
       try {
-        const response = await fetch('/matterport-dashboard/data/matterport.csv');
+        const response = await fetch(`/${process.env.BASEPATH}/data/matterport.csv`);
         const csvText = await response.text();
         const parsedData = parseCsv(csvText);
 
@@ -85,7 +84,7 @@ export default function Home() {
 
   useEffect(() => {
     const getMatterPorts = async () => {
-      const response = await fetch(`/matterport-dashboard/api/matterports`, {
+      const response = await fetch(`/${process.env.BASEPATH}/api/matterports`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
