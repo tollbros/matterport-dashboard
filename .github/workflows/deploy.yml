@@ -74,6 +74,9 @@ jobs:
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
+        env:
+          TOLL_RDS_GATEWAY_API_DOMAIN: ${{ secrets.TOLL_RDS_GATEWAY_API_DOMAIN }}
+          TOLL_RDS_GATEWAY_API_KEY: ${{ secrets.TOLL_RDS_GATEWAY_API_KEY }}
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
