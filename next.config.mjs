@@ -4,8 +4,9 @@ const isGithubActions = process.env.GITHUB_ACTIONS || false
 let basePath = ''
 
 if (isGithubActions) {
-  basePath = '/matterport-dashboard'
+  basePath = '/tb-svg-processor'
 }
+
 
 const nextConfig = {
   basePath: basePath,
@@ -13,6 +14,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-}
+};
 
-module.exports = nextConfig
+export default nextConfig;
