@@ -85,6 +85,9 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      TOLL_RDS_GATEWAY_API_DOMAIN: ${{ secrets.TOLL_RDS_GATEWAY_API_DOMAIN }}
+      TOLL_RDS_GATEWAY_API_KEY: ${{ secrets.TOLL_RDS_GATEWAY_API_KEY }}
     runs-on: ubuntu-latest
     needs: build
     steps:

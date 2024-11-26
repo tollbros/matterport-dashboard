@@ -9,7 +9,7 @@ export const GET = async (req) => {
         'x-api-key': process.env.TOLL_RDS_GATEWAY_API_KEY,
       },
     }).catch((gotDataError) => {
-      console.log('SEVERE ERROR: Fetching Catalog PDFs');
+      console.log('SEVERE ERROR: Fetching Catalog PDFs!! NOOOOOOOO...');
       console.log(`SEVERE ${URL}`);
       console.log(gotDataError);
     });
