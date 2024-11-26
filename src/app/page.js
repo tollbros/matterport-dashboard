@@ -47,7 +47,7 @@ export default function Home() {
   useEffect(() => {
     const fetchCsv = async () => {
       try {
-        const response = await fetch(`/${process.env.BASEPATH}/data/matterport.csv`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASEPATH}/data/matterport.csv`);
         const csvText = await response.text();
         const parsedData = parseCsv(csvText);
 
@@ -84,7 +84,7 @@ export default function Home() {
 
   useEffect(() => {
     const getMatterPorts = async () => {
-      const response = await fetch(`/${process.env.BASEPATH}/api/matterports`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASEPATH}/api/matterports`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
