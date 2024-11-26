@@ -48,7 +48,7 @@ export default function Home() {
   useEffect(() => {
     const fetchCsv = async () => {
       try {
-        const response = await fetch('/data/matterport.csv');
+        const response = await fetch('/matterport-dashboard/data/matterport.csv');
         const csvText = await response.text();
         const parsedData = parseCsv(csvText);
 
