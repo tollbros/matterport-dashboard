@@ -33,6 +33,35 @@ export default function Home() {
     setWhite(event.target.checked);
   };
 
+  function exportListToCSV() {
+    // Get the list items
+    const listItems = document.querySelectorAll('#theOutput li');
+    let csvContent = '';
+
+    // Loop through each list item
+    listItems.forEach((li, index) => {
+        // Extract <span> elements within the <li>
+        const spans = li.querySelectorAll('span');
+        const row = Array.from(spans)
+            .map(span => {
+                const link = span.querySelector('a');
+                // If the <span> has a link, use the link text
+                return link ? link.textContent.trim() : span.textContent.trim();
+            })
+            .join(','); // Join columns with commas
+        csvContent += row + '\n'; // Add row to CSV content
+    });
+
+    // Create and download the CSV file
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'matterport_export.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
 
   const isLive = (mID) => {
     for (let i = 0; i < liveMatterports.length; i++) {
@@ -50,6 +79,23 @@ export default function Home() {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BASEPATH}/data/matterport.csv`);
         const csvText = await response.text();
         const parsedData = parseCsv(csvText);
+
+
+        for (let i = 0; i < parsedData.length; i++) {
+          
+          let state = parsedData[i]?.Address?.split(',')[2];
+          console.log(parsedData[i]);
+          if (state) {
+            parsedData[i].State = state;
+          } else {
+            parsedData[i].State = "unknown";
+          }
+
+          /* console.log(matterport.Address);
+          let state = matterport.Address.split(',')[2];
+          console.log(state); */
+
+        }
 
         parsedData.sort((a, b) => {
           return new Date(a.Created_Date) - new Date(b.Created_Date);
@@ -119,6 +165,8 @@ export default function Home() {
             {!gettingData && <span className={styles.got}>Data Fetched from Web Database!</span>}
           </h2>
 
+          <button onClick={exportListToCSV}>Export CSV</button>
+
           <aside>
             <fieldset className={styles.inputs}>
               <input type="checkbox" id="white" name="Online and Live" checked={white} onChange={handleWhite} />
@@ -139,15 +187,17 @@ export default function Home() {
           </aside>
           
           {matterports.length > 0 && //liveMatterports.length > 0 && 
-          <ol>
+          <ol id={'theOutput'}>
              <li className={`${styles.header}`}>
-                <p><span>WEB DB STATUS</span><span>MP ID</span> <span>MP FOLDER</span> <span>MP NAME</span> <span>CREATE DATE</span></p>
+                <p><span>STATUS - # of Active</span><span>MP ID</span> <span>MP FOLDER</span> <span>PUBLIC</span> <span>STATE</span> <span>MP NAME</span> <span>CREATE DATE</span></p>
               </li>
               {matterports.map((matterport, index) => {
 
                   const mLink = matterport.Space_Details_URL;
                   const mLinkID = mLink.split('/')[mLink.split('/').length - 1];
 
+                  //find mLinkID in liveMatterports and return it numactive
+                  const numactive = liveMatterports.find((element) => element['Matterport Name'] === mLinkID)?.numactive;
                   const live = isLive(mLinkID);
                   const isArchived = matterport.Parent_folder_name.toLowerCase().includes("archived");
                 
@@ -161,9 +211,13 @@ export default function Home() {
                     shown = true;
                   }
 
+                  /* console.log(matterport.Address);
+                  let state = matterport.Address.split(',')[2];
+                  console.log(state); */
+
                     return (
                       <li key={`mm-${index}`} className={`${!shown ? styles.hidden : ""} ${!live ? styles.inActive : ""}  ${isArchived ? styles.isArchived : ""} ${(isArchived && !live) ? styles.archivedAndNotLive : ""}`}>
-                        <p><span>{live ? "online" : "offline"}</span><span><Link target="_blank" href={mLink}>{mLinkID}</Link></span> <span>{matterport.Parent_folder_name}</span> <span>{matterport.Space_name}</span> <span>{matterport.Created_Date}</span></p>
+                        <p><span>{live ? "online" : "offline"} - {numactive}</span><span><Link target="_blank" href={mLink}>{mLinkID}</Link></span> <span>{matterport.Parent_folder_name}</span> <span>{matterport.Public_status}</span> <span>{matterport.State}</span> <span>{matterport.Space_name}</span> <span>{matterport.Created_Date}</span></p>
                       </li>
                     )
                   
