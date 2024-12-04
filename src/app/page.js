@@ -36,7 +36,7 @@ export default function Home() {
 
   const isLive = (mID) => {
     for (let i = 0; i < liveMatterports.length; i++) {
-      if (liveMatterports[i]['Matterport Name'] === mID) {
+      if (liveMatterports[i]['Matterport Name'] === mID && liveMatterports[i]['numactive'] !== 0) {
         return true;
       }
     }
